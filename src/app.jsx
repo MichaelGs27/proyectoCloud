@@ -37,7 +37,6 @@ function App() {
       boxShadow: '0 4px 12px rgba(0,0,0,0.1)', 
       gridColumn: '1 / span 2' 
     },
-    // NUEVO: Contenedor con Scroll para la tabla
     tableWrapper: {
       maxHeight: '400px', 
       overflowY: 'auto',   
@@ -66,8 +65,6 @@ function App() {
       <h1 style={estilos.titulo}>📊 Dashboard de Control de Sanciones</h1>
 
       <div style={estilos.grid}>
-        
-        {/* TABLA PRINCIPAL CON SCROLL */}
         <div style={estilos.fullCard}>
           <h3 style={{ textAlign: 'center' }}>Top Municipios por Recaudo</h3>
           
