@@ -3,13 +3,12 @@ import {
   PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   AreaChart, Area, Legend
 } from 'recharts';
-const projectId = import.meta.env.VITE_GOOGLE_PROJECT_ID;
 
 function App() {
   const [datos, setDatos] = useState([]);
   const [cargando, setCargando] = useState(true);
 
-  const COLORES = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658', '#8dd1e1', '#a4de6c', '#d0ed57'];
+  const COLORES = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e'];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,75 +26,50 @@ function App() {
   }, []);
 
   const estilos = {
-      container: { padding: '30px', fontFamily: 'Arial, sans-serif', backgroundColor: '#f0f2f5', minHeight: '100vh' },
-      grid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '20px' },
-      card: { backgroundColor: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' },
-      fullCard: { 
-      backgroundColor: 'white', 
-      padding: '20px', 
-      borderRadius: '12px', 
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)', 
-      gridColumn: '1 / span 2' 
-    },
-    tableWrapper: {
-      maxHeight: '400px', 
-      overflowY: 'auto',   
-      marginTop: '10px',
-      border: '1px solid #eee',
-      borderRadius: '8px'
-    },
-    titulo: { color: '#1a73e8', textAlign: 'center', marginBottom: '30px' },
-    th: { 
-      padding: '12px', 
-      textAlign: 'center', 
-      borderBottom: '2px solid #ddd', 
-      position: 'sticky', 
-      top: 0, 
-      backgroundColor: '#1a73e8', 
-      color: 'white',
-      zIndex: 1
-    },
-    td: { padding: '10px', textAlign: 'center', borderBottom: '1px solid #eee' }
+    container: { padding: '40px 20px', fontFamily: 'sans-serif', backgroundColor: '#0f172a', minHeight: '100vh', color: '#f8fafc' },
+    titulo: { background: 'linear-gradient(to right, #60a5fa, #34d399)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textAlign: 'center', marginBottom: '40px', fontSize: '2.5rem', fontWeight: 'bold' },
+    grid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', maxWidth: '1200px', margin: '0 auto' },
+    card: { backgroundColor: '#1e293b', padding: '24px', borderRadius: '16px', border: '1px solid #334155' },
+    fullCard: { backgroundColor: '#1e293b', padding: '24px', borderRadius: '16px', border: '1px solid #334155', gridColumn: '1 / span 2' },
+    tableWrapper: { maxHeight: '300px', overflowY: 'auto', marginTop: '15px', borderRadius: '8px', backgroundColor: '#0f172a' },
+    th: { padding: '12px', position: 'sticky', top: 0, backgroundColor: '#3b82f6', color: 'white' },
+    td: { padding: '10px', textAlign: 'center', borderBottom: '1px solid #334155', color: '#cbd5e1' }
   };
 
-  if (cargando) return <div style={estilos.container}><h2>Procesando datos de BigQuery...</h2></div>;
+  if (cargando) return <div style={{ color: '#3b82f6', textAlign: 'center', marginTop: '20%' }}><h2>Cargando Dashboard...</h2></div>;
 
   return (
     <div style={estilos.container}>
-      <h1 style={estilos.titulo}>📊 Dashboard de Control de Sanciones</h1>
+      <h1 style={estilos.titulo}>Dashboard de Control de Sanciones</h1>
 
       <div style={estilos.grid}>
         <div style={estilos.fullCard}>
-          <h3 style={{ textAlign: 'center' }}>Top Municipios por Recaudo</h3>
-          
+          <h3 style={{ textAlign: 'center', color: '#94a3b8' }}>Top Municipios por Recaudo</h3>
           <div style={estilos.tableWrapper}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
                   <th style={estilos.th}>Municipio</th>
                   <th style={estilos.th}>Recaudo Total</th>
-                  <th style={estilos.th}>Cantidad de Multas</th>
+                  <th style={estilos.th}>Cantidad</th>
                 </tr>
               </thead>
               <tbody>
                 {datos.map((d, i) => (
                   <tr key={i}>
                     <td style={estilos.td}>{d.Municipio}</td>
-                    <td style={{ ...estilos.td, fontWeight: 'bold', color: '#2e7d32' }}>
-                      $ {Number(d.total_dinero).toLocaleString('es-CO')}
-                    </td>
+                    <td style={{ ...estilos.td, color: '#10b981', fontWeight: 'bold' }}>$ {Number(d.total_dinero).toLocaleString('es-CO')}</td>
                     <td style={estilos.td}>{d.cantidad_multas}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <p style={{ textAlign: 'right', fontSize: '0.8rem', color: '#666', marginTop: '5px' }}>
-            * Desliza hacia abajo para ver más registros
-          </p>
         </div>
+
+        {/* GRÁFICO DE TORTA */}
         <div style={estilos.card}>
-          <h3 style={{ textAlign: 'center' }}> Distribución del Recaudo (7 primeros)</h3>
+          <h3 style={{ textAlign: 'center', color: '#94a3b8' }}>Distribución del Recaudo</h3>
           <div style={{ width: '100%', height: 350 }}>
             <ResponsiveContainer>
               <PieChart>
@@ -103,43 +77,47 @@ function App() {
                   data={datos.slice(0, 7)}
                   dataKey="total_dinero"
                   nameKey="Municipio"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  label={({ Municipio, percent }) => `${Municipio} ${(percent * 100).toFixed(0)}%`}
+                  cx="50%" cy="50%"
+                  outerRadius={80}
+                  label={{ fill: '#cbd5e1', fontSize: 12 }}
                 >
                   {datos.slice(0, 7).map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORES[index % COLORES.length]} />
+                    <Cell key={`cell-${index}`} fill={COLORES[index % COLORES.length]} stroke="#1e293b" strokeWidth={2} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => `$ ${Number(value).toLocaleString('es-CO')}`} />
+                <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', color: '#fff' }} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
         <div style={estilos.card}>
-          <h3 style={{ textAlign: 'center' }}> Frecuencia de Sanciones (10 primeros)</h3>
+          <h3 style={{ textAlign: 'center', color: '#94a3b8' }}>Tendencia de Multas</h3>
           <div style={{ width: '100%', height: 350 }}>
             <ResponsiveContainer>
               <AreaChart data={datos.slice(0, 10)}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="Municipio" hide />
-                <YAxis />
-                <Tooltip />
-                <Legend />
+                <defs>
+                  <linearGradient id="colorArea" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <XAxis dataKey="Municipio" tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                <YAxis tick={{ fill: '#94a3b8' }} />
+                <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
                 <Area 
                   type="monotone" 
                   dataKey="cantidad_multas" 
-                  name="N° Multas" 
-                  stroke="#1a73e8" 
-                  fill="#d1e3fa" 
+                  stroke="#3b82f6" 
+                  strokeWidth={3}
+                  fillOpacity={1} 
+                  fill="url(#colorArea)" 
                 />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
-
       </div>
     </div>
   );
